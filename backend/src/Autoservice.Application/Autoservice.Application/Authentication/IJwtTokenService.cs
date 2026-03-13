@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Autoservice.Domain.Entities;
 
 namespace Autoservice.Application.Authentication;
 
-internal interface IJwtTokenService
+public interface IJwtTokenService
 {
+    string GenerateToken(Guid userId, string username, UserRole role);
 }

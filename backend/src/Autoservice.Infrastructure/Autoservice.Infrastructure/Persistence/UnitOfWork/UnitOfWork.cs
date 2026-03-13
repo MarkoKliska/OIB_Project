@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Autoservice.Infrastructure.Persistence.Contexts;
+using Autoservice.Application.Interfaces;
 
 namespace Autoservice.Infrastructure.Persistence.UnitOfWork;
 
-internal class UnitOfWork
+public class UnitOfWork(AutoserviceDbContext context) : IUnitOfWork
 {
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return await context.SaveChangesAsync(cancellationToken);
+    }
 }
