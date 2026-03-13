@@ -1,6 +1,8 @@
 ﻿using Autoservice.Application.Authentication;
 using Autoservice.Application.Interfaces;
+using Autoservice.Domain.Repositories;
 using Autoservice.Infrastructure.Persistence.Contexts;
+using Autoservice.Infrastructure.Persistence.Repositories;
 using Autoservice.Infrastructure.Persistence.UnitOfWork;
 using Autoservice.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -22,9 +24,9 @@ public static class ServiceCollectionExtensions
                 sql => sql.MigrationsAssembly(typeof(AutoserviceDbContext).Assembly.FullName)
             ));
 
-        //services.AddScoped<IUserRepository, UserRepository>();
-        //services.AddScoped<IVehicleRepository, VehicleRepository>();
-        //services.AddScoped<IServiceInvoiceRepository, ServiceInvoiceRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IVehicleRepository, VehicleRepository>();
+        services.AddScoped<IServiceInvoiceRepository, ServiceInvoiceRepository>();
 
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
