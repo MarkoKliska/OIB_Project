@@ -11,14 +11,15 @@ namespace Autoservice.Infrastructure.Services;
 
 public class JwtTokenService(IConfiguration config) : IJwtTokenService
 {
-    public string GenerateToken(Guid userId, string username, UserRole role)
+    public string GenerateToken(Guid userId, string username, UserRole role, string fullName = "")
     {
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
             new Claim(JwtRegisteredClaimNames.UniqueName, username),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Role, role.ToString())
+            new Claim(ClaimTypes.Role, role.ToString()),
+            new Claim("FullName", string.IsNullOrEmpty(fullName) ? username : fullName)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));

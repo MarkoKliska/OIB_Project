@@ -4,10 +4,11 @@ namespace Autoservice.Domain.Repositories;
 
 public interface IVehicleRepository
 {
-    Task<Vehicle?> GetByIdAsync(Guid id, CancellationToken ct = default);
-    Task<IEnumerable<Vehicle>> GetAllAsync(CancellationToken ct = default);
-    Task<IEnumerable<Vehicle>> GetUnservicedAsync(CancellationToken ct = default);
-    Task<int> GetActiveCountAsync(CancellationToken ct = default);
-    Task AddAsync(Vehicle vehicle, CancellationToken ct = default);
-    Task UpdateAsync(Vehicle vehicle, CancellationToken ct = default);
+    Task<Vehicle?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Vehicle?> GetByLicensePlateAsync(string licensePlate, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Vehicle>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<Vehicle>> GetUnservicedAsync(CancellationToken cancellationToken = default);
+    Task<int> GetActiveCountAsync(CancellationToken cancellationToken = default);
+    Task AddAsync(Vehicle vehicle, CancellationToken cancellationToken = default);
+    Task UpdateAsync(Vehicle vehicle, CancellationToken cancellationToken = default);
 }

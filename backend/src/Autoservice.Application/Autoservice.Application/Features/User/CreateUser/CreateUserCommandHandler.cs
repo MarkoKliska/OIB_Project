@@ -6,13 +6,15 @@ using Autoservice.Application.Utils;
 using Autoservice.Domain.Entities;
 using Autoservice.Domain.Repositories;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Autoservice.Application.Features.User.CreateUser;
 
 public sealed class CreateUserCommandHandler(
     IUserRepository users,
     IUnitOfWork uow,
-    IJwtTokenService jwtService
+    IJwtTokenService jwtService,
+    IEventLogger logger
 ) : IRequestHandler<CreateUserCommand, Result<CreateUserResponseDto>>
 {
     public async Task<Result<CreateUserResponseDto>> Handle(
@@ -21,9 +23,14 @@ public sealed class CreateUserCommandHandler(
     {
         var req = command.Request;
 
+        logger.Info($"Attempting to register new user with username '{req.Username}'.");
+
         var exists = await users.GetByUsernameAsync(req.Username, ct);
         if (exists is not null)
+        {
+            logger.Warning($"Registration failed - username '{req.Username}' already exists.");
             return Result<CreateUserResponseDto>.Failure("Username already exists.");
+        }
 
         var roleEnum = Enum.TryParse<UserRole>(req.Role, ignoreCase: true, out var parsed)
             ? parsed
@@ -42,7 +49,9 @@ public sealed class CreateUserCommandHandler(
         await users.AddAsync(user, ct);
         await uow.SaveChangesAsync(ct);
 
-        var token = jwtService.GenerateToken(user.Id, user.Username, user.Role);
+        var token = jwtService.GenerateToken(user.Id, user.Username, user.Role, user.FullName);
+
+        logger.Info($"User '{req.Username}' successfully registered with role '{roleEnum}'.");
 
         return Result<CreateUserResponseDto>.Success(new CreateUserResponseDto
         {
