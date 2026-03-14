@@ -5,29 +5,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Autoservice.Infrastructure.Persistence.Repositories;
 
-public class VehicleRepository : IVehicleRepository
+public class VehicleRepository(AutoserviceDbContext context) : IVehicleRepository
 {
-    private readonly AutoserviceDbContext _context;
-    public VehicleRepository(AutoserviceDbContext context) => _context = context;
+    public async Task<Vehicle?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        => await context.Vehicles.FindAsync([id], cancellationToken);
 
-    public async Task<Vehicle?> GetByIdAsync(Guid id, CancellationToken ct = default) =>
-        await _context.Vehicles.FindAsync([id], ct);
+    public async Task<Vehicle?> GetByLicensePlateAsync(string licensePlate, CancellationToken cancellationToken = default)
+        => await context.Vehicles.FirstOrDefaultAsync(v => v.LicensePlate == licensePlate, cancellationToken);
 
-    public async Task<IEnumerable<Vehicle>> GetAllAsync(CancellationToken ct = default) =>
-        await _context.Vehicles.Include(v => v.ServiceInvoice).ToListAsync(ct);
+    public async Task<IEnumerable<Vehicle>> GetAllAsync(CancellationToken cancellationToken = default)
+        => await context.Vehicles.Include(v => v.ServiceInvoice).ToListAsync(cancellationToken);
 
-    public async Task<IEnumerable<Vehicle>> GetUnservicedAsync(CancellationToken ct = default) =>
-        await _context.Vehicles.Where(v => !v.IsServiced).ToListAsync(ct);
+    public async Task<IEnumerable<Vehicle>> GetUnservicedAsync(CancellationToken cancellationToken = default)
+        => await context.Vehicles.Where(v => !v.IsServiced).ToListAsync(cancellationToken);
 
-    public async Task<int> GetActiveCountAsync(CancellationToken ct = default) =>
-        await _context.Vehicles.CountAsync(v => !v.IsServiced, ct);
+    public async Task<int> GetActiveCountAsync(CancellationToken cancellationToken = default)
+        => await context.Vehicles.CountAsync(v => !v.IsServiced, cancellationToken);
 
-    public async Task AddAsync(Vehicle vehicle, CancellationToken ct = default) =>
-        await _context.Vehicles.AddAsync(vehicle, ct);
+    public async Task AddAsync(Vehicle vehicle, CancellationToken cancellationToken = default)
+        => await context.Vehicles.AddAsync(vehicle, cancellationToken);
 
-    public Task UpdateAsync(Vehicle vehicle, CancellationToken ct = default)
+    public Task UpdateAsync(Vehicle vehicle, CancellationToken cancellationToken = default)
     {
-        _context.Vehicles.Update(vehicle);
+        context.Vehicles.Update(vehicle);
         return Task.CompletedTask;
     }
 }

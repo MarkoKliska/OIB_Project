@@ -31,6 +31,13 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+        services.AddScoped<MorningBillingService>();
+        services.AddScoped<AfternoonBillingService>();
+        services.AddScoped<BillingServiceFactory>();
+
+        services.AddScoped<IBillingService>(sp =>
+            sp.GetRequiredService<BillingServiceFactory>().GetForCurrentShift());
+
         return services;
     }
 }
