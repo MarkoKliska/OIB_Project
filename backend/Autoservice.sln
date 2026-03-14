@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autoservice.Application", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autoservice.Infrastructure", "src\Autoservice.Infrastructure\Autoservice.Infrastructure\Autoservice.Infrastructure.csproj", "{6F80E47D-67BB-3FC1-B699-D7FA354918B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autoservice.Tests", "src\Autoservice.Tests\Autoservice.Tests\Autoservice.Tests.csproj", "{303307DA-12D6-A21F-ECB0-8133402CB2AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{6F80E47D-67BB-3FC1-B699-D7FA354918B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F80E47D-67BB-3FC1-B699-D7FA354918B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F80E47D-67BB-3FC1-B699-D7FA354918B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{303307DA-12D6-A21F-ECB0-8133402CB2AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{303307DA-12D6-A21F-ECB0-8133402CB2AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{303307DA-12D6-A21F-ECB0-8133402CB2AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{303307DA-12D6-A21F-ECB0-8133402CB2AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
