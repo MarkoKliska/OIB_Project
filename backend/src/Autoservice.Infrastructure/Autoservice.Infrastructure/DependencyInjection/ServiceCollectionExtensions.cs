@@ -31,6 +31,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+        services.AddSingleton<IEventLogger, FileEventLogger>();
+
+        services.AddSingleton<ITimeProvider, SystemTimeProvider>();
+
         services.AddScoped<MorningBillingService>();
         services.AddScoped<AfternoonBillingService>();
         services.AddScoped<BillingServiceFactory>();
