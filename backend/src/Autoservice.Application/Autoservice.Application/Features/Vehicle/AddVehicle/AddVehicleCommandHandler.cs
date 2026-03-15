@@ -25,10 +25,10 @@ public sealed class AddVehicleCommandHandler(
             return Result<VehicleResponseDto>.Failure(
                 $"Cannot add vehicle. Maximum capacity of {MaxVehiclesOnService} vehicles on service has been reached.");
 
-        var existingPlate = await vehicles.GetByLicensePlateAsync(req.LicensePlate, ct);
-        if (existingPlate is not null)
+        var activeWithSamePlate = await vehicles.GetActiveByLicensePlateAsync(req.LicensePlate, ct);
+        if (activeWithSamePlate is not null)
             return Result<VehicleResponseDto>.Failure(
-                $"Vehicle with license plate '{req.LicensePlate}' is already registered.");
+                $"Vehicle with license plate '{req.LicensePlate}' is already on service.");
 
         if (!Enum.TryParse<VehicleType>(req.Type, ignoreCase: true, out var vehicleType))
             return Result<VehicleResponseDto>.Failure(

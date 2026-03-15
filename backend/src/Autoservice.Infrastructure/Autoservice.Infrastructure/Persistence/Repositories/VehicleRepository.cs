@@ -12,7 +12,9 @@ public class VehicleRepository(AutoserviceDbContext context) : IVehicleRepositor
 
     public async Task<Vehicle?> GetByLicensePlateAsync(string licensePlate, CancellationToken cancellationToken = default)
         => await context.Vehicles.FirstOrDefaultAsync(v => v.LicensePlate == licensePlate, cancellationToken);
-
+    public async Task<Vehicle?> GetActiveByLicensePlateAsync(string licensePlate, CancellationToken cancellationToken = default)
+    => await context.Vehicles.FirstOrDefaultAsync(
+        v => v.LicensePlate == licensePlate && !v.IsServiced, cancellationToken);
     public async Task<IEnumerable<Vehicle>> GetAllAsync(CancellationToken cancellationToken = default)
         => await context.Vehicles.Include(v => v.ServiceInvoice).ToListAsync(cancellationToken);
 

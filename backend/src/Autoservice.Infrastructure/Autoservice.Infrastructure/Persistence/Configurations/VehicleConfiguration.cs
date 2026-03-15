@@ -10,7 +10,7 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
     {
         builder.HasKey(v => v.Id);
         builder.Property(v => v.LicensePlate).IsRequired().HasMaxLength(20);
-        builder.HasIndex(v => v.LicensePlate).IsUnique();
+        builder.HasIndex(v => v.LicensePlate);
         builder.Property(v => v.Brand).IsRequired().HasMaxLength(100);
         builder.Property(v => v.Model).IsRequired().HasMaxLength(100);
         builder.Property(v => v.Type).HasConversion<string>();
