@@ -1,11 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Autoservice.Application.Authentication;
+using Autoservice.Application.Interfaces;
+using Autoservice.Domain.Repositories;
+using Autoservice.Infrastructure.Persistence.Contexts;
+using Autoservice.Infrastructure.Persistence.Repositories;
+using Autoservice.Infrastructure.Persistence.UnitOfWork;
+using Autoservice.Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
 
 namespace Autoservice.Infrastructure.DependencyInjection;
 
-internal class ServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddDbContext<AutoserviceDbContext>(options =>
+            options.UseNpgsql(
+                configuration.GetConnectionString("DefaultConnection"),
+                sql => sql.MigrationsAssembly(typeof(AutoserviceDbContext).Assembly.FullName)
+            ));
+
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IVehicleRepository, VehicleRepository>();
+        services.AddScoped<IServiceInvoiceRepository, ServiceInvoiceRepository>();
+
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.AddSingleton<IEventLogger, FileEventLogger>();
+
+        services.AddSingleton<ITimeProvider, SystemTimeProvider>();
+
+        services.AddScoped<MorningBillingService>();
+        services.AddScoped<AfternoonBillingService>();
+        services.AddScoped<BillingServiceFactory>();
+
+        services.AddScoped<IBillingService>(sp =>
+            sp.GetRequiredService<BillingServiceFactory>().GetForCurrentShift());
+
+        return services;
+    }
 }

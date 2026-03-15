@@ -1,0 +1,261 @@
+<div class="dashboard">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-logo">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="48" r="8" stroke="currentColor" stroke-width="3"/>
+          <circle cx="48" cy="48" r="8" stroke="currentColor" stroke-width="3"/>
+          <path d="M8 48H4V32L12 16H52L60 32V48H56" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <path d="M24 48H40" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <span>AutoService</span>
+      </div>
+
+      <div class="sidebar-user">
+        <div class="user-avatar">{{ fullName?.charAt(0) ?? 'M' }}</div>
+        <div class="user-info">
+          <span class="user-name">{{ fullName }}</span>
+          <span class="user-role">Manager</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item" [class.active]="activeTab === 'vehicles'" (click)="setTab('vehicles')">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="6" cy="18" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="18" cy="18" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M3 18H1.5V13L4.5 7H19.5L22.5 13V18H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M8.5 18H15.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          All Vehicles
+        </button>
+        <button class="nav-item" [class.active]="activeTab === 'add-vehicle'" (click)="setTab('add-vehicle')">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+            <line x1="12" y1="8" x2="12" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Add Vehicle
+        </button>
+        <button class="nav-item" [class.active]="activeTab === 'invoices'" (click)="setTab('invoices')">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <line x1="8" y1="8" x2="16" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="8" y1="16" x2="12" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Invoices
+        </button>
+      </nav>
+    </div>
+
+    <button class="logout-btn" (click)="logout()">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M16 17l5-5-5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M21 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M9 21H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      Sign Out
+    </button>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ===== TAB: ALL VEHICLES ===== -->
+    <div class="tab-content" *ngIf="activeTab === 'vehicles'">
+      <div class="page-header">
+        <div>
+          <h1>Vehicles</h1>
+          <p>Overview of all registered vehicles</p>
+        </div>
+        <button class="btn-refresh" (click)="loadVehicles()">
+          <svg viewBox="0 0 24 24" fill="none">
+            <polyline points="23 4 23 10 17 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20.5 14a9 9 0 1 1-1.4-4.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Refresh
+        </button>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-value">{{ vehicles.length }}</span>
+          <span class="stat-label">Total vehicles</span>
+        </div>
+        <div class="stat-card accent">
+          <span class="stat-value">{{ pendingCount }}</span>
+          <span class="stat-label">Awaiting service</span>
+        </div>
+        <div class="stat-card success">
+          <span class="stat-value">{{ servicedCount }}</span>
+          <span class="stat-label">Serviced</span>
+        </div>
+        <div class="stat-card capacity">
+          <span class="stat-value">{{ pendingCount }}/10</span>
+          <span class="stat-label">Capacity</span>
+        </div>
+      </div>
+
+      <div class="loading-state" *ngIf="isLoadingVehicles">
+        <div class="spinner"></div>
+        <p>Loading vehicles...</p>
+      </div>
+
+      <div class="empty-state" *ngIf="!isLoadingVehicles && vehicles.length === 0">
+        <svg viewBox="0 0 64 64" fill="none">
+          <circle cx="16" cy="48" r="8" stroke="currentColor" stroke-width="2"/>
+          <circle cx="48" cy="48" r="8" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 48H4V32L12 16H52L60 32V48H56" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M24 48H40" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <p>No vehicles on service</p>
+        <button class="btn-primary-sm" (click)="setTab('add-vehicle')">Add first vehicle</button>
+      </div>
+
+      <div class="table-wrapper" *ngIf="!isLoadingVehicles && vehicles.length > 0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>License Plate</th>
+              <th>Vehicle</th>
+              <th>Type</th>
+              <th>Estimated Price</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of vehicles">
+              <td><span class="plate-badge">{{ v.licensePlate }}</span></td>
+              <td>{{ v.brand }} {{ v.model }}</td>
+              <td>{{ vehicleTypeLabels[v.type] ?? v.type }}</td>
+              <td>{{ v.estimatedPrice | number:'1.2-2' }}</td>
+              <td>
+                <span class="status-badge" [class.serviced]="v.isServiced" [class.pending]="!v.isServiced">
+                  {{ v.isServiced ? 'Serviced' : 'Pending' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== TAB: ADD VEHICLE ===== -->
+    <div class="tab-content" *ngIf="activeTab === 'add-vehicle'">
+      <div class="page-header">
+        <div>
+          <h1>Add Vehicle</h1>
+          <p>Register a new vehicle for service</p>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <form [formGroup]="addVehicleForm" (ngSubmit)="onAddVehicle()" novalidate>
+
+          <div class="form-row">
+            <div class="field-group">
+              <label>License Plate</label>
+              <input type="text" formControlName="licensePlate" placeholder="e.g. AB-123-CD" [class.has-error]="lp.invalid && lp.touched" />
+              <span class="field-error" *ngIf="lp.invalid && lp.touched">License plate is required.</span>
+            </div>
+            <div class="field-group">
+              <label>Vehicle Type</label>
+              <select formControlName="type">
+                <option *ngFor="let t of vehicleTypes" [value]="t">{{ t }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field-group">
+              <label>Brand</label>
+              <input type="text" formControlName="brand" placeholder="e.g. Volkswagen" [class.has-error]="brand.invalid && brand.touched" />
+              <span class="field-error" *ngIf="brand.invalid && brand.touched">Brand is required.</span>
+            </div>
+            <div class="field-group">
+              <label>Model</label>
+              <input type="text" formControlName="model" placeholder="e.g. Golf 7" [class.has-error]="model.invalid && model.touched" />
+              <span class="field-error" *ngIf="model.invalid && model.touched">Model is required.</span>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Estimated Service Price</label>
+            <input type="number" formControlName="estimatedPrice" placeholder="e.g. 15000" [class.has-error]="price.invalid && price.touched" />
+            <span class="field-error" *ngIf="price.invalid && price.touched">
+              <ng-container *ngIf="price.errors?.['required']">Price is required.</ng-container>
+              <ng-container *ngIf="price.errors?.['min']">Price must be greater than 0.</ng-container>
+            </span>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" (click)="setTab('vehicles')">Cancel</button>
+            <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+              {{ isSubmitting ? 'Saving...' : 'Add Vehicle' }}
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== TAB: INVOICES ===== -->
+    <div class="tab-content" *ngIf="activeTab === 'invoices'">
+      <div class="page-header">
+        <div>
+          <h1>Invoices</h1>
+          <p>All issued service invoices</p>
+        </div>
+        <button class="btn-refresh" (click)="loadInvoices()">
+          <svg viewBox="0 0 24 24" fill="none">
+            <polyline points="23 4 23 10 17 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20.5 14a9 9 0 1 1-1.4-4.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Refresh
+        </button>
+      </div>
+
+      <div class="loading-state" *ngIf="isLoadingInvoices">
+        <div class="spinner"></div>
+        <p>Loading invoices...</p>
+      </div>
+
+      <div class="empty-state" *ngIf="!isLoadingInvoices && invoices.length === 0">
+        <svg viewBox="0 0 64 64" fill="none">
+          <rect x="12" y="4" width="40" height="56" rx="4" stroke="currentColor" stroke-width="2"/>
+          <line x1="20" y1="18" x2="44" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="20" y1="26" x2="44" y2="26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="20" y1="34" x2="32" y2="34" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <p>No invoices issued yet</p>
+      </div>
+
+      <div class="table-wrapper" *ngIf="!isLoadingInvoices && invoices.length > 0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Vehicle</th>
+              <th>License Plate</th>
+              <th>Mechanic</th>
+              <th>Date & Time</th>
+              <th>Total Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let inv of invoices">
+              <td>{{ inv.vehicleBrand }} {{ inv.vehicleModel }}</td>
+              <td><span class="plate-badge">{{ inv.vehicleLicensePlate }}</span></td>
+              <td>{{ inv.mechanicName }}</td>
+              <td>{{ inv.issuedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="amount">{{ inv.totalAmount | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
