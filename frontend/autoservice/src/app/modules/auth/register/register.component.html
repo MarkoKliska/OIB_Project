@@ -1,0 +1,163 @@
+<div class="auth-wrapper">
+
+  <!-- Left panel: branding -->
+  <div class="brand-panel">
+    <div class="brand-content">
+      <div class="brand-icon">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="48" r="8" stroke="currentColor" stroke-width="3"/>
+          <circle cx="48" cy="48" r="8" stroke="currentColor" stroke-width="3"/>
+          <path d="M8 48H4V32L12 16H52L60 32V48H56" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <path d="M24 48H40" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <path d="M12 16L16 32H52L56 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M28 32V20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M36 32V20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1 class="brand-name">AutoService</h1>
+      <p class="brand-tagline">Kreirajte nalog i<br>pridružite se timu.</p>
+
+      <div class="role-info">
+        <div class="role-card">
+          <div class="role-badge manager">M</div>
+          <div>
+            <strong>Menadžer</strong>
+            <p>Dodaje vozila, pregleda sve evidencije i račune.</p>
+          </div>
+        </div>
+        <div class="role-card">
+          <div class="role-badge mechanic">W</div>
+          <div>
+            <strong>Mehaničar</strong>
+            <p>Servisira vozila i izdaje račune za usluge.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="brand-bg-pattern"></div>
+  </div>
+
+  <!-- Right panel: form -->
+  <div class="form-panel">
+    <div class="form-container">
+
+      <div class="form-header">
+        <h2>Registracija</h2>
+        <p>Popunite formu za kreiranje novog naloga</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+        <!-- First + Last name in a row -->
+        <div class="field-row">
+          <div class="field-group">
+            <label for="firstName">Ime</label>
+            <div class="input-wrapper" [class.has-error]="firstName.invalid && firstName.touched">
+              <input id="firstName" type="text" formControlName="firstName" placeholder="Vaše ime" />
+            </div>
+            <span class="field-error" *ngIf="firstName.invalid && firstName.touched">
+              <ng-container *ngIf="firstName.errors?.['required']">Ime je obavezno.</ng-container>
+              <ng-container *ngIf="firstName.errors?.['minlength']">Min. 2 karaktera.</ng-container>
+            </span>
+          </div>
+
+          <div class="field-group">
+            <label for="lastName">Prezime</label>
+            <div class="input-wrapper" [class.has-error]="lastName.invalid && lastName.touched">
+              <input id="lastName" type="text" formControlName="lastName" placeholder="Vaše prezime" />
+            </div>
+            <span class="field-error" *ngIf="lastName.invalid && lastName.touched">
+              <ng-container *ngIf="lastName.errors?.['required']">Prezime je obavezno.</ng-container>
+              <ng-container *ngIf="lastName.errors?.['minlength']">Min. 2 karaktera.</ng-container>
+            </span>
+          </div>
+        </div>
+
+        <!-- Username -->
+        <div class="field-group">
+          <label for="username">Korisničko ime</label>
+          <div class="input-wrapper" [class.has-error]="username.invalid && username.touched">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <input id="username" type="text" formControlName="username" placeholder="npr. mehanicarmilan" autocomplete="username" />
+          </div>
+          <span class="field-error" *ngIf="username.invalid && username.touched">
+            <ng-container *ngIf="username.errors?.['required']">Korisničko ime je obavezno.</ng-container>
+            <ng-container *ngIf="username.errors?.['minlength']">Minimum 3 karaktera.</ng-container>
+          </span>
+        </div>
+
+        <!-- Password -->
+        <div class="field-group">
+          <label for="password">Lozinka</label>
+          <div class="input-wrapper" [class.has-error]="password.invalid && password.touched">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
+            </svg>
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Min. 6 karaktera"
+              autocomplete="new-password"
+            />
+            <button type="button" class="toggle-pw" (click)="togglePassword()" tabindex="-1">
+              <svg *ngIf="!showPassword" viewBox="0 0 24 24" fill="none">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              <svg *ngIf="showPassword" viewBox="0 0 24 24" fill="none">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <span class="field-error" *ngIf="password.invalid && password.touched">
+            <ng-container *ngIf="password.errors?.['required']">Lozinka je obavezna.</ng-container>
+            <ng-container *ngIf="password.errors?.['minlength']">Minimum 6 karaktera.</ng-container>
+          </span>
+        </div>
+
+        <!-- Role selector -->
+        <div class="field-group">
+          <label>Uloga</label>
+          <div class="role-selector">
+            <button
+              type="button"
+              *ngFor="let r of roles"
+              class="role-btn"
+              [class.active]="role.value === r.value"
+              (click)="role.setValue(r.value)"
+            >
+              <span class="role-indicator"></span>
+              {{ r.label }}
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Kreiraj nalog</span>
+          <span *ngIf="isLoading" class="btn-loader">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-dasharray="31.4" stroke-dashoffset="10"/>
+            </svg>
+            Učitavanje...
+          </span>
+        </button>
+
+      </form>
+
+      <p class="form-footer">
+        Već imate nalog?
+        <a [routerLink]="'/login'">Prijavite se</a>
+      </p>
+
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,267 @@
+<div class="dashboard">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-logo">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="48" r="8" stroke="currentColor" stroke-width="3"/>
+          <circle cx="48" cy="48" r="8" stroke="currentColor" stroke-width="3"/>
+          <path d="M8 48H4V32L12 16H52L60 32V48H56" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <path d="M24 48H40" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <span>AutoService</span>
+      </div>
+
+      <div class="sidebar-user">
+        <div class="user-avatar">{{ fullName?.charAt(0) ?? 'M' }}</div>
+        <div class="user-info">
+          <span class="user-name">{{ fullName }}</span>
+          <span class="user-role">Menadžer</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item" [class.active]="activeTab === 'vehicles'" (click)="setTab('vehicles')">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="6" cy="18" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="18" cy="18" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M3 18H1.5V13L4.5 7H19.5L22.5 13V18H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M8.5 18H15.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M4.5 7L6 13H18L19.5 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          Sva vozila
+        </button>
+        <button class="nav-item" [class.active]="activeTab === 'add-vehicle'" (click)="setTab('add-vehicle')">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>
+            <line x1="12" y1="8" x2="12" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Dodaj vozilo
+        </button>
+        <button class="nav-item" [class.active]="activeTab === 'invoices'" (click)="setTab('invoices')">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/>
+            <line x1="8" y1="8" x2="16" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="8" y1="16" x2="12" y2="16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Računi
+        </button>
+      </nav>
+    </div>
+
+    <button class="logout-btn" (click)="logout()">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 17l5-5-5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M21 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M9 21H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      Odjava
+    </button>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ===== TAB: SVA VOZILA ===== -->
+    <div class="tab-content" *ngIf="activeTab === 'vehicles'">
+      <div class="page-header">
+        <div>
+          <h1>Vozila na servisu</h1>
+          <p>Pregled svih registrovanih vozila</p>
+        </div>
+        <button class="btn-refresh" (click)="loadVehicles()">
+          <svg viewBox="0 0 24 24" fill="none">
+            <polyline points="23 4 23 10 17 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20.5 14a9 9 0 1 1-1.4-4.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Osveži
+        </button>
+      </div>
+
+      <!-- Stats row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-value">{{ vehicles.length }}</span>
+          <span class="stat-label">Ukupno vozila</span>
+        </div>
+        <div class="stat-card accent">
+          <span class="stat-value">{{ pendingCount }}</span>
+          <span class="stat-label">Čekaju servis</span>
+        </div>
+        <div class="stat-card success">
+          <span class="stat-value">{{ servicedCount }}</span>
+          <span class="stat-label">Sервисirana</span>
+        </div>
+        <div class="stat-card capacity">
+          <span class="stat-value">{{ pendingCount }}/10</span>
+          <span class="stat-label">Kapacitet</span>
+        </div>
+      </div>
+
+      <!-- Loader -->
+      <div class="loading-state" *ngIf="isLoadingVehicles">
+        <div class="spinner"></div>
+        <p>Učitavanje vozila...</p>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-state" *ngIf="!isLoadingVehicles && vehicles.length === 0">
+        <svg viewBox="0 0 64 64" fill="none">
+          <circle cx="16" cy="48" r="8" stroke="currentColor" stroke-width="2"/>
+          <circle cx="48" cy="48" r="8" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 48H4V32L12 16H52L60 32V48H56" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M24 48H40" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <p>Nema vozila na servisu</p>
+        <button class="btn-primary-sm" (click)="setTab('add-vehicle')">Dodaj prvo vozilo</button>
+      </div>
+
+      <!-- Vehicle table -->
+      <div class="table-wrapper" *ngIf="!isLoadingVehicles && vehicles.length > 0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Registracija</th>
+              <th>Vozilo</th>
+              <th>Tip</th>
+              <th>Procenjena cena</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of vehicles">
+              <td><span class="plate-badge">{{ v.licensePlate }}</span></td>
+              <td>{{ v.brand }} {{ v.model }}</td>
+              <td>{{ vehicleTypeLabels[v.type] ?? v.type }}</td>
+              <td>{{ v.estimatedPrice | number:'1.2-2' }} RSD</td>
+              <td>
+                <span class="status-badge" [class.serviced]="v.isServiced" [class.pending]="!v.isServiced">
+                  {{ v.isServiced ? 'Servisiran' : 'Na čekanju' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== TAB: DODAJ VOZILO ===== -->
+    <div class="tab-content" *ngIf="activeTab === 'add-vehicle'">
+      <div class="page-header">
+        <div>
+          <h1>Dodaj vozilo</h1>
+          <p>Unesite podatke o novom vozilu</p>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <form [formGroup]="addVehicleForm" (ngSubmit)="onAddVehicle()" novalidate>
+
+          <div class="form-row">
+            <div class="field-group">
+              <label>Registarska oznaka</label>
+              <input type="text" formControlName="licensePlate" placeholder="npr. NS-123-AB" [class.has-error]="lp.invalid && lp.touched" />
+              <span class="field-error" *ngIf="lp.invalid && lp.touched">Registarska oznaka je obavezna.</span>
+            </div>
+            <div class="field-group">
+              <label>Tip vozila</label>
+              <select formControlName="type">
+                <option *ngFor="let t of vehicleTypes" [value]="t">{{ vehicleTypeLabels[t] }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field-group">
+              <label>Marka</label>
+              <input type="text" formControlName="brand" placeholder="npr. Volkswagen" [class.has-error]="brand.invalid && brand.touched" />
+              <span class="field-error" *ngIf="brand.invalid && brand.touched">Marka je obavezna.</span>
+            </div>
+            <div class="field-group">
+              <label>Model</label>
+              <input type="text" formControlName="model" placeholder="npr. Golf 7" [class.has-error]="model.invalid && model.touched" />
+              <span class="field-error" *ngIf="model.invalid && model.touched">Model je obavezan.</span>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Procenjena cena usluge (RSD)</label>
+            <input type="number" formControlName="estimatedPrice" placeholder="npr. 15000" [class.has-error]="price.invalid && price.touched" />
+            <span class="field-error" *ngIf="price.invalid && price.touched">
+              <ng-container *ngIf="price.errors?.['required']">Cena je obavezna.</ng-container>
+              <ng-container *ngIf="price.errors?.['min']">Cena mora biti veća od 0.</ng-container>
+            </span>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-secondary" (click)="setTab('vehicles')">Otkaži</button>
+            <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+              <span *ngIf="!isSubmitting">Dodaj vozilo</span>
+              <span *ngIf="isSubmitting">Čuvanje...</span>
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== TAB: RAČUNI ===== -->
+    <div class="tab-content" *ngIf="activeTab === 'invoices'">
+      <div class="page-header">
+        <div>
+          <h1>Izdati računi</h1>
+          <p>Pregled svih računa za izvršene usluge</p>
+        </div>
+        <button class="btn-refresh" (click)="loadInvoices()">
+          <svg viewBox="0 0 24 24" fill="none">
+            <polyline points="23 4 23 10 17 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20.5 14a9 9 0 1 1-1.4-4.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Osveži
+        </button>
+      </div>
+
+      <div class="loading-state" *ngIf="isLoadingInvoices">
+        <div class="spinner"></div>
+        <p>Učitavanje računa...</p>
+      </div>
+
+      <div class="empty-state" *ngIf="!isLoadingInvoices && invoices.length === 0">
+        <svg viewBox="0 0 64 64" fill="none">
+          <rect x="12" y="4" width="40" height="56" rx="4" stroke="currentColor" stroke-width="2"/>
+          <line x1="20" y1="18" x2="44" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="20" y1="26" x2="44" y2="26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="20" y1="34" x2="32" y2="34" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <p>Nema izdatih računa</p>
+      </div>
+
+      <div class="table-wrapper" *ngIf="!isLoadingInvoices && invoices.length > 0">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Vozilo</th>
+              <th>Registracija</th>
+              <th>Mehaničar</th>
+              <th>Datum i vreme</th>
+              <th>Ukupan iznos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let inv of invoices">
+              <td>{{ inv.vehicleBrand }} {{ inv.vehicleModel }}</td>
+              <td><span class="plate-badge">{{ inv.vehicleLicensePlate }}</span></td>
+              <td>{{ inv.mechanicName }}</td>
+              <td>{{ inv.issuedAt | date: 'dd.MM.yyyy HH:mm' }}</td>
+              <td class="amount">{{ inv.totalAmount | number:'1.2-2' }} RSD</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
