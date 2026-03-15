@@ -9,9 +9,7 @@ import { RouteNames } from '../../../shared/consts/routes';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule,
-            ReactiveFormsModule,
-            RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
@@ -48,7 +46,7 @@ export class LoginComponent {
     this.isLoading = true;
     this.authService.login(this.form.value).subscribe({
       next: (res) => {
-        this.toastService.success(`Dobrodošli, ${res.fullName}!`);
+        this.toastService.success(`Welcome back, ${res.fullName}!`);
         if (res.role === 'Manager') {
           this.router.navigate([`/${RouteNames.ManagerDashboard}`]);
         } else {
@@ -56,7 +54,7 @@ export class LoginComponent {
         }
       },
       error: (err) => {
-        const message = err?.error?.error ?? 'Prijava nije uspela. Pokušajte ponovo.';
+        const message = err?.error?.error ?? 'Login failed. Please try again.';
         this.toastService.error(message);
         this.isLoading = false;
       }

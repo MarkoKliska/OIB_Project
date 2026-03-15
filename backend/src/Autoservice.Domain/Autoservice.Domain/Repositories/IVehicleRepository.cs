@@ -6,6 +6,7 @@ public interface IVehicleRepository
 {
     Task<Vehicle?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<Vehicle?> GetByLicensePlateAsync(string licensePlate, CancellationToken cancellationToken = default);
+    Task<Vehicle?> GetActiveByLicensePlateAsync(string licensePlate, CancellationToken cancellationToken = default);
     Task<IEnumerable<Vehicle>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<IEnumerable<Vehicle>> GetUnservicedAsync(CancellationToken cancellationToken = default);
     Task<int> GetActiveCountAsync(CancellationToken cancellationToken = default);

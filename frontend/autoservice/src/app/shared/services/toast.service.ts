@@ -5,11 +5,11 @@ import { ToastrService } from 'ngx-toastr';
 export class ToastService {
   constructor(private toastr: ToastrService) {}
 
-  success(message: string, title: string = 'Uspešno'): void {
+  success(message: string, title: string = 'Success'): void {
     this.toastr.success(message, title);
   }
 
-  error(message: string, title: string = 'Greška'): void {
+  error(message: string, title: string = 'Error'): void {
     this.toastr.error(message, title);
   }
 
@@ -17,7 +17,7 @@ export class ToastService {
     this.toastr.info(message, title);
   }
 
-  warning(message: string, title: string = 'Upozorenje'): void {
+  warning(message: string, title: string = 'Warning'): void {
     this.toastr.warning(message, title);
   }
 }

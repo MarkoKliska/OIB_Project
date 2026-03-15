@@ -9,10 +9,7 @@ import { RouteNames } from '../../../shared/consts/routes';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule,
-            ReactiveFormsModule,
-            RouterLink
-          ],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
@@ -22,8 +19,8 @@ export class RegisterComponent {
   showPassword = false;
 
   roles = [
-    { value: 'Manager', label: 'Menadžer' },
-    { value: 'Mechanic', label: 'Mehaničar' }
+    { value: 'Manager', label: 'Manager' },
+    { value: 'Mechanic', label: 'Mechanic' }
   ];
 
   constructor(
@@ -60,7 +57,7 @@ export class RegisterComponent {
     this.isLoading = true;
     this.authService.register(this.form.value).subscribe({
       next: (res) => {
-        this.toastService.success(`Nalog kreiran! Dobrodošli, ${res.firstName}!`);
+        this.toastService.success(`Account created! Welcome, ${res.firstName}!`);
         if (res.role === 'Manager') {
           this.router.navigate([`/${RouteNames.ManagerDashboard}`]);
         } else {
@@ -68,7 +65,7 @@ export class RegisterComponent {
         }
       },
       error: (err) => {
-        const message = err?.error?.error ?? 'Registracija nije uspela. Pokušajte ponovo.';
+        const message = err?.error?.error ?? 'Registration failed. Please try again.';
         this.toastService.error(message);
         this.isLoading = false;
       }

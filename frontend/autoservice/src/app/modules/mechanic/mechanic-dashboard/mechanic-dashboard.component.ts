@@ -8,7 +8,7 @@ import { ToastService } from '../../../shared/services/toast.service';
 import { VehicleResponseDto } from '../../../shared/dto/responses/vehicle.request.dto';
 import { ServiceInvoiceResponseDto } from '../../../shared/dto/responses/invoice.response.dto';
 
-type ActiveTab = 'vehicles' | 'complete';
+type ActiveTab = 'vehicles' | 'last-invoice';
 
 @Component({
   selector: 'app-mechanic-dashboard',
@@ -27,10 +27,11 @@ export class MechanicDashboardComponent implements OnInit {
   isLoadingVehicles = false;
   completingVehicleId: string | null = null;
 
+  // Fix: allow undefined so ?? operator works without TS warning
   vehicleTypeLabels: { [key: string]: string | undefined } = {
-    Passenger: 'Putničko',
-    Truck: 'Teretno',
-    Motorcycle: 'Motocikl'
+    Passenger: 'Passenger',
+    Truck: 'Truck',
+    Motorcycle: 'Motorcycle'
   };
 
   constructor(
@@ -59,8 +60,9 @@ export class MechanicDashboardComponent implements OnInit {
         this.vehicles = data;
         this.isLoadingVehicles = false;
       },
-      error: () => {
-        this.toastService.error('Greška pri učitavanju vozila.');
+      error: (err) => {
+        const msg = err?.error?.error ?? 'Failed to load vehicles.';
+        this.toastService.error(msg);
         this.isLoadingVehicles = false;
       }
     });
@@ -73,15 +75,15 @@ export class MechanicDashboardComponent implements OnInit {
     this.invoiceService.completeService(vehicleId).subscribe({
       next: (invoice) => {
         this.toastService.success(
-          `Servis završen! Račun: ${invoice.totalAmount.toFixed(2)} RSD`
+          `Service completed! Invoice total: ${invoice.totalAmount.toFixed(2)}`
         );
         this.lastIssuedInvoice = invoice;
         this.vehicles = this.vehicles.filter(v => v.id !== vehicleId);
         this.completingVehicleId = null;
-        this.setTab('complete');
+        this.setTab('last-invoice');
       },
       error: (err) => {
-        const msg = err?.error?.error ?? 'Greška pri završavanju servisa.';
+        const msg = err?.error?.error ?? 'Failed to complete service.';
         this.toastService.error(msg);
         this.completingVehicleId = null;
       }
@@ -92,6 +94,7 @@ export class MechanicDashboardComponent implements OnInit {
 
   logout(): void {
     this.authService.logout();
+    this.toastService.info('You have been signed out.');
     this.router.navigate(['/login']);
   }
 }

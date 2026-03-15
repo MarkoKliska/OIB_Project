@@ -14,9 +14,7 @@ type ActiveTab = 'vehicles' | 'add-vehicle' | 'invoices';
 @Component({
   selector: 'app-manager-dashboard',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './manager-dashboard.component.html',
   styleUrls: ['./manager-dashboard.component.scss']
 })
@@ -32,10 +30,12 @@ export class ManagerDashboardComponent implements OnInit {
   isSubmitting = false;
 
   vehicleTypes = ['Passenger', 'Truck', 'Motorcycle'];
+
+  // Fix: allow undefined so ?? operator works without TS warning
   vehicleTypeLabels: { [key: string]: string | undefined } = {
-    Passenger: 'Putničko',
-    Truck: 'Teretno',
-    Motorcycle: 'Motocikl'
+    Passenger: 'Passenger',
+    Truck: 'Truck',
+    Motorcycle: 'Motorcycle'
   };
 
   addVehicleForm: FormGroup;
@@ -49,10 +49,10 @@ export class ManagerDashboardComponent implements OnInit {
     private router: Router
   ) {
     this.addVehicleForm = this.fb.group({
-      licensePlate: ['', [Validators.required, Validators.minLength(2)]],
-      brand:        ['', [Validators.required, Validators.minLength(2)]],
-      model:        ['', [Validators.required, Validators.minLength(1)]],
-      type:         ['Passenger', Validators.required],
+      licensePlate:   ['', [Validators.required, Validators.minLength(2)]],
+      brand:          ['', [Validators.required, Validators.minLength(2)]],
+      model:          ['', [Validators.required, Validators.minLength(1)]],
+      type:           ['Passenger', Validators.required],
       estimatedPrice: [null, [Validators.required, Validators.min(1)]]
     });
   }
@@ -79,8 +79,9 @@ export class ManagerDashboardComponent implements OnInit {
         this.vehicles = data;
         this.isLoadingVehicles = false;
       },
-      error: () => {
-        this.toastService.error('Greška pri učitavanju vozila.');
+      error: (err) => {
+        const msg = err?.error?.error ?? 'Failed to load vehicles.';
+        this.toastService.error(msg);
         this.isLoadingVehicles = false;
       }
     });
@@ -110,14 +111,14 @@ export class ManagerDashboardComponent implements OnInit {
     this.isSubmitting = true;
     this.vehicleService.addVehicle(this.addVehicleForm.value).subscribe({
       next: (v) => {
-        this.toastService.success(`Vozilo ${v.brand} ${v.model} uspešno dodato!`);
+        this.toastService.success(`${v.brand} ${v.model} successfully added to service.`);
         this.addVehicleForm.reset({ type: 'Passenger' });
         this.vehicles = [];
         this.setTab('vehicles');
         this.isSubmitting = false;
       },
       error: (err) => {
-        const msg = err?.error?.error ?? 'Greška pri dodavanju vozila.';
+        const msg = err?.error?.error ?? 'Failed to add vehicle.';
         this.toastService.error(msg);
         this.isSubmitting = false;
       }
@@ -133,8 +134,9 @@ export class ManagerDashboardComponent implements OnInit {
         this.invoices = data;
         this.isLoadingInvoices = false;
       },
-      error: () => {
-        this.toastService.error('Greška pri učitavanju računa.');
+      error: (err) => {
+        const msg = err?.error?.error ?? 'Failed to load invoices.';
+        this.toastService.error(msg);
         this.isLoadingInvoices = false;
       }
     });
@@ -144,6 +146,7 @@ export class ManagerDashboardComponent implements OnInit {
 
   logout(): void {
     this.authService.logout();
+    this.toastService.info('You have been signed out.');
     this.router.navigate(['/login']);
   }
 }

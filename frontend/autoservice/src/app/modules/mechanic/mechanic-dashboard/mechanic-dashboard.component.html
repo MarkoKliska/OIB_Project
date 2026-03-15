@@ -17,26 +17,31 @@
         <div class="user-avatar">{{ fullName?.charAt(0) ?? 'M' }}</div>
         <div class="user-info">
           <span class="user-name">{{ fullName }}</span>
-          <span class="user-role">Mehaničar</span>
+          <span class="user-role">Mechanic</span>
         </div>
       </div>
 
       <nav class="sidebar-nav">
         <button class="nav-item" [class.active]="activeTab === 'vehicles'" (click)="setTab('vehicles')">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 24 24" fill="none">
             <circle cx="6" cy="18" r="2.5" stroke="currentColor" stroke-width="1.5"/>
             <circle cx="18" cy="18" r="2.5" stroke="currentColor" stroke-width="1.5"/>
             <path d="M3 18H1.5V13L4.5 7H19.5L22.5 13V18H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             <path d="M8.5 18H15.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
-          Vozila na čekanju
+          Pending Vehicles
         </button>
-        <button class="nav-item" [class.active]="activeTab === 'complete'" (click)="setTab('complete')" [disabled]="!lastIssuedInvoice">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <button
+          class="nav-item"
+          [class.active]="activeTab === 'last-invoice'"
+          (click)="setTab('last-invoice')"
+          [disabled]="!lastIssuedInvoice"
+        >
+          <svg viewBox="0 0 24 24" fill="none">
             <rect x="4" y="2" width="16" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/>
             <polyline points="9 11 12 14 16 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          Poslednji račun
+          Last Invoice
         </button>
       </nav>
     </div>
@@ -47,53 +52,49 @@
         <path d="M21 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         <path d="M9 21H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
-      Odjava
+      Sign Out
     </button>
   </aside>
 
   <!-- MAIN CONTENT -->
   <main class="main">
 
-    <!-- ===== TAB: VOZILA NA ČEKANJU ===== -->
+    <!-- ===== TAB: PENDING VEHICLES ===== -->
     <div class="tab-content" *ngIf="activeTab === 'vehicles'">
       <div class="page-header">
         <div>
-          <h1>Vozila na čekanju</h1>
-          <p>Vozila koja čekaju servisiranje</p>
+          <h1>Pending Vehicles</h1>
+          <p>Vehicles awaiting service</p>
         </div>
         <button class="btn-refresh" (click)="loadVehicles()">
           <svg viewBox="0 0 24 24" fill="none">
             <polyline points="23 4 23 10 17 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M20.5 14a9 9 0 1 1-1.4-4.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
-          Osveži
+          Refresh
         </button>
       </div>
 
-      <!-- Counter -->
       <div class="counter-bar">
         <div class="counter-item">
           <span class="counter-value">{{ vehicles.length }}</span>
-          <span class="counter-label">vozila čekaju servis</span>
+          <span class="counter-label">vehicles awaiting service</span>
         </div>
       </div>
 
-      <!-- Loader -->
       <div class="loading-state" *ngIf="isLoadingVehicles">
         <div class="spinner"></div>
-        <p>Učitavanje vozila...</p>
+        <p>Loading vehicles...</p>
       </div>
 
-      <!-- Empty state -->
       <div class="empty-state" *ngIf="!isLoadingVehicles && vehicles.length === 0">
         <svg viewBox="0 0 64 64" fill="none">
           <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="2"/>
           <polyline points="22 32 29 39 42 26" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <p>Sva vozila su servisirana!</p>
+        <p>All vehicles have been serviced!</p>
       </div>
 
-      <!-- Vehicle cards -->
       <div class="vehicle-grid" *ngIf="!isLoadingVehicles && vehicles.length > 0">
         <div class="vehicle-card" *ngFor="let v of vehicles">
           <div class="vehicle-card-header">
@@ -103,8 +104,8 @@
           <div class="vehicle-card-body">
             <h3>{{ v.brand }} {{ v.model }}</h3>
             <div class="price-line">
-              <span class="price-label">Procenjena cena</span>
-              <span class="price-value">{{ v.estimatedPrice | number:'1.2-2' }} RSD</span>
+              <span class="price-label">Estimated price</span>
+              <span class="price-value">{{ v.estimatedPrice | number:'1.2-2' }}</span>
             </div>
           </div>
           <div class="vehicle-card-footer">
@@ -119,19 +120,19 @@
               <svg *ngIf="completingVehicleId === v.id" viewBox="0 0 24 24" class="spinning">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.5" fill="none" stroke-dasharray="31.4" stroke-dashoffset="10"/>
               </svg>
-              {{ completingVehicleId === v.id ? 'Obrađuje se...' : 'Završi servis' }}
+              {{ completingVehicleId === v.id ? 'Processing...' : 'Complete Service' }}
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ===== TAB: POSLEDNJI RAČUN ===== -->
-    <div class="tab-content" *ngIf="activeTab === 'complete'">
+    <!-- ===== TAB: LAST INVOICE ===== -->
+    <div class="tab-content" *ngIf="activeTab === 'last-invoice'">
       <div class="page-header">
         <div>
-          <h1>Izdati račun</h1>
-          <p>Servis je uspešno završen</p>
+          <h1>Invoice Issued</h1>
+          <p>Service completed successfully</p>
         </div>
       </div>
 
@@ -144,33 +145,35 @@
             </svg>
           </div>
           <div>
-            <h2>Račun za uslugu</h2>
-            <p>{{ lastIssuedInvoice.issuedAt | date:'dd.MM.yyyy HH:mm' }}</p>
+            <h2>Service Invoice</h2>
+            <p>{{ lastIssuedInvoice.issuedAt | date:'dd/MM/yyyy HH:mm' }}</p>
           </div>
         </div>
 
         <div class="invoice-details">
           <div class="detail-row">
-            <span class="detail-label">Vozilo</span>
+            <span class="detail-label">Vehicle</span>
             <span class="detail-value">{{ lastIssuedInvoice.vehicleBrand }} {{ lastIssuedInvoice.vehicleModel }}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">Registracija</span>
-            <span class="detail-value"><span class="plate-badge">{{ lastIssuedInvoice.vehicleLicensePlate }}</span></span>
+            <span class="detail-label">License Plate</span>
+            <span class="detail-value">
+              <span class="plate-badge">{{ lastIssuedInvoice.vehicleLicensePlate }}</span>
+            </span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">Mehaničar</span>
+            <span class="detail-label">Mechanic</span>
             <span class="detail-value">{{ lastIssuedInvoice.mechanicName }}</span>
           </div>
         </div>
 
         <div class="invoice-total">
-          <span class="total-label">Ukupan iznos</span>
-          <span class="total-value">{{ lastIssuedInvoice.totalAmount | number:'1.2-2' }} RSD</span>
+          <span class="total-label">Total Amount</span>
+          <span class="total-value">{{ lastIssuedInvoice.totalAmount | number:'1.2-2' }}</span>
         </div>
 
         <button class="btn-back" (click)="setTab('vehicles')">
-          ← Nazad na listu vozila
+          ← Back to vehicle list
         </button>
       </div>
     </div>
